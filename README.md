@@ -221,6 +221,24 @@ Represents customer-address relationships.
 
 ---
 
+## Implementation Details
+
+### Hash Keys
+All surrogate keys (`*_hk`) are `VARCHAR(32)` — MD5 hashes of business keys.
+
+### Hash Diff
+Satellites use `hash_diff VARCHAR(32)` to detect changes without comparing all columns.
+
+### Ghost Rows
+`link_store_sale` uses ghost rows for nullable FKs (`promotion_hk`, `address_hk`) 
+instead of allowing NULLs — preserves referential integrity.
+
+### Satellite PKs
+Composite primary key `(entity_hk, load_date)` enables full history tracking 
+— every change creates a new row, nothing is overwritten.
+
+---
+
 ## Data Vault ERD
 
 > TODO: Insert Vault Schema ERD here
@@ -241,7 +259,12 @@ Data loading follows the standard Data Vault loading order:
 2. Links
 3. Satellites
 
-Foreign keys are preserved in this implementation, therefore parallel loading is not used.
+Foreign keys are preserved in this implementation, therefore parallel loading is not used. The detailed loading sequence is:
+
+1. Hubs — no dependencies, can be loaded from source independently
+2. Links — depend on all referenced Hubs being loaded first
+3. Hub Satellites — depend on their parent Hub
+4. Link Satellites — depend on their parent Link
 
 ---
 
