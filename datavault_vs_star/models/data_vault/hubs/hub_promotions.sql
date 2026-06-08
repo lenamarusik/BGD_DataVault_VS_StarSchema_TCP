@@ -1,1 +1,1 @@
-{{ hub("stg_promotions", "p_promo_id", "promotion_hk", "tpcds.promotion") }}
+{{ hub("stg_promotions", "p_promo_id", "promotion_hk", "tpcds.promotion", ghost=true) }}
