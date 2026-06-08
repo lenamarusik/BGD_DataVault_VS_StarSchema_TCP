@@ -16,3 +16,5 @@ models:
     data_vault:
       hubs:
         +materialized: incremental
+      links:
+        +materialized: incremental
