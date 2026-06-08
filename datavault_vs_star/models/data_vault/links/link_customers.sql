@@ -21,6 +21,6 @@ FROM
 
 {% if is_incremental() %}
 
-WHERE customer_address_hk NOT IN (SELECT store_sale_hk FROM {{ this }})
+WHERE customer_address_hk NOT IN (SELECT customer_address_hk FROM {{ this }})
 
 {% endif %}
