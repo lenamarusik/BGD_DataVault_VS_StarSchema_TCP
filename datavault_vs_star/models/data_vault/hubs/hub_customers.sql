@@ -10,7 +10,6 @@ WITH source_keys AS (
 
 SELECT * FROM source_keys
 
-{# do a full load on first run #}
 {% if is_incremental() %}
 WHERE customer_hk NOT IN (SELECT customer_hk FROM {{ this }})
 {% endif %}
