@@ -20,3 +20,5 @@ models:
         +materialized: incremental
       satellites:
         +materialized: incremental
+      bi:
+        +materialized: table
