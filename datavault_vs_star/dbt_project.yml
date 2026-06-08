@@ -18,3 +18,5 @@ models:
         +materialized: incremental
       links:
         +materialized: incremental
+      satellites:
+        +materialized: incremental
