@@ -10,7 +10,6 @@ WITH joined AS (
         LEFT JOIN {{ ref('stg_customer_addresses') }} ca ON ss.ss_addr_sk = ca.ca_address_sk
         LEFT JOIN {{ ref('stg_dates') }} d ON ss.ss_sold_date_sk = d.d_date_sk
         LEFT JOIN {{ ref('stg_times') }} t ON ss.ss_sold_time_sk = t.t_time_sk
-    WHERE c.c_customer_id IS NOT NULL
 )
 SELECT
     {{ hash_key(['ss_ticket_number', 'c_customer_id', 'i_item_id', 's_store_id', 'd_date', 'p_promo_id', 'ca_address_id']) }} AS store_sale_hk,
