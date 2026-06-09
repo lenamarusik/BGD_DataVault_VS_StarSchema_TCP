@@ -22,3 +22,11 @@ models:
         +materialized: incremental
       bi:
         +materialized: table
+    star_schema:
+      dim:
+        +materialized: incremental
+      facts:
+        +materialized: incremental
+      # bi:
+      #   +materialized: table
+
