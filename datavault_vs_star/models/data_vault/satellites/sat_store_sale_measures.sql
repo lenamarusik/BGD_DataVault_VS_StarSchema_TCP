@@ -29,7 +29,6 @@ WITH joined AS (
     LEFT JOIN {{ ref('stg_customer_addresses') }} ca ON ss.ss_addr_sk = ca.ca_address_sk
     LEFT JOIN {{ ref('stg_dates') }} d ON ss.ss_sold_date_sk = d.d_date_sk
     LEFT JOIN {{ ref('stg_times') }} t ON ss.ss_sold_time_sk = t.t_time_sk
-    WHERE c.c_customer_id IS NOT NULL
 ),
 source AS (
     SELECT
