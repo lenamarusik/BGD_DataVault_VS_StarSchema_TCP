@@ -21,7 +21,6 @@ WITH source AS (
         i_manager_id
     FROM {{ ref('stg_items') }}
     WHERE i_item_id IS NOT NULL
-        AND i_rec_end_date IS NULL
 )
 
 {% if is_incremental() %}
