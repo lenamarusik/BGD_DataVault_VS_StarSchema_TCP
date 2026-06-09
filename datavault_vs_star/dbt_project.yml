@@ -27,6 +27,6 @@ models:
         +materialized: incremental
       facts:
         +materialized: incremental
-      # bi:
-      #   +materialized: table
+      bi:
+        +materialized: table
 
