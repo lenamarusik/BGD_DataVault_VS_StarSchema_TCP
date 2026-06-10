@@ -48,11 +48,11 @@ QUERY_PAIRS = [
 ]
 
 
-def time_query(con: duckdb.DuckDBPyConnection, sql: str, runs: int, cold: bool) -> list[float]:
+def time_query(con: duckdb.DuckDBPyConnection, sql: str, runs: int) -> list[float]:
     times = []
     for _ in range(runs):
-        if cold:
-            con.execute("CHECKPOINT")
+        # ensure cold cache
+        con.execute("CHECKPOINT")
         t0 = time.perf_counter()
         con.execute(sql).fetchall()
         times.append(time.perf_counter() - t0)
@@ -74,20 +74,10 @@ def winner_marker(dv_avg: float, star_avg: float) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--runs", type=int, default=5, help="Timed repetitions per query")
-    parser.add_argument("--cold", action="store_true", help="CHECKPOINT between runs (simulates cold cache)")
     args = parser.parse_args()
 
     con = duckdb.connect(str(DB_PATH))
 
-    # Warm-up pass — not measured, ensures pages are in cache for warm benchmarks
-    if not args.cold:
-        print("Warming cache (1 warm-up pass) …")
-        for _, dv_path, star_path in QUERY_PAIRS:
-            for path in (dv_path, star_path):
-                con.execute(path.read_text()).fetchall()
-
-    mode = "cold (CHECKPOINT between runs)" if args.cold else f"warm ({args.runs} runs each)"
-    print(f"\nBenchmark mode : {mode}")
     print(f"Database       : {DB_PATH}\n")
 
     col_q  = 30
@@ -103,8 +93,8 @@ def main() -> None:
         dv_sql   = dv_path.read_text()
         star_sql = star_path.read_text()
 
-        dv_times   = time_query(con, dv_sql,   args.runs, args.cold)
-        star_times = time_query(con, star_sql, args.runs, args.cold)
+        dv_times   = time_query(con, dv_sql,   args.runs)
+        star_times = time_query(con, star_sql, args.runs)
 
         dv_avg   = statistics.mean(dv_times)
         star_avg = statistics.mean(star_times)
