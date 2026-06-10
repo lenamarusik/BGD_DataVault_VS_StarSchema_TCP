@@ -353,20 +353,62 @@ Generate or import the dataset according to the selected database platform.
 
 ## How to Run
 
-### Star Schema
+### Dependencies
+To run the project, you have to have __dbt CLI__ and __DuckDB__ installed.
+For running the benchmarks, __uv__ is a nice-to-have.
 
-1. Create dimension tables
-2. Create fact tables
-3. Load data
-4. Execute analytical queries
+### Generating the source data
+To generate source data, run the __generate_tpcds.sh__ script with:
 
-### Data Vault
+```console
+sh generate_tpcds.sh
+```
 
-1. Create hubs
-2. Create links
-3. Create satellites
-4. Load historical data
-5. Execute comparison queries
+This generates a TPC-DS in the DuckDB database using tpcds plugin with scale factor 1.
+If you want to have a bigger dataset, e.g. for benchmarking purposes, pass the scale factor as an argument:
+
+```console
+sh generate_tpcds.sh 10
+```
+
+### Creating Star Schema and Data Vault
+To generate all the tables, run:
+
+```console
+dbt run
+```
+
+This will generate all tables for both star schema and data vault in the same database as source data.
+The command will also fill the tables related to the business queries.
+
+> If you want to avoid filling the business tables (which can take long on larger datasets)
+> you can exclude them from the `dbt run` with:
+>
+> ```console
+> dbt run --exclude models/star_schema/bi models/data_vault/bi 
+> ```
+> 
+> You still need to compile the BI SQLs for benchmarking – this can be done with:
+>
+> ```console
+> dbt compile --select models/star_schema/bi models/data_vault/bi 
+> ```
+
+### Benchmarking Star Schema vs. Data Vault
+
+To perform the benchmark, run:
+
+```console
+uv run --with duckdb benchmark.py
+```
+
+if you have uv installed, or:
+
+```console
+python benchmark.py
+```
+
+(you need to have __duckdb__ python library installed for the latter).
 
 ---
 
