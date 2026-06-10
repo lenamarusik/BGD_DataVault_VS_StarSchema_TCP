@@ -416,6 +416,19 @@ python benchmark.py
 
 ## Key Findings
 
+### Benchmark results
+
+These are benchmark results for __10 runs__, performed on target data with __scale factor 10 (~10 GB of source data)__.
+
+| Query                       | DV avg       | DV min   | Star avg     | Star min | Result          |
+|-----------------------------|--------------|----------|--------------|----------|-----------------|
+| clients_by_revenue          | 2080.4ms     | 1909.5ms | 1185.8ms     | 1161.7ms | Star faster     |
+| monthly_revenue_per_product | 1551.1ms     | 1469.5ms |  514.3ms     |  465.7ms | Star faster     |
+| promotion_effectiveness     | 1181.6ms     | 1088.7ms |  196.7ms     |  170.2ms | Star faster     |
+| sales_per_store             | 1309.1ms     | 1195.9ms |  232.4ms     |  188.1ms | Star faster     |
+| seasonality                 | 1125.8ms     |  894.6ms |  268.5ms     |  207.8ms | Star faster     |
+| **TOTAL (sum of avgs)**     | **7248.0ms** |          | **2397.8ms** |          | **Star faster** |
+
 ### Star Schema
 
 Best for:
@@ -433,6 +446,7 @@ Best for:
 * multiple integrated data sources,
 * historical auditability,
 * scalable long-term storage.
+
 
 ---
 
