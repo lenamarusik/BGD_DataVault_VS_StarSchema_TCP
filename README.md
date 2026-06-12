@@ -45,14 +45,27 @@ The main research question is:
 # Repository Structure
 
 ```text
-project/
+BGD_DataVault_VS_StarSchema/
 │
-├── data/               # Sample or generated datasets
-├── sql/                # SQL scripts for Star Schema and Data Vault
-├── diagrams/           # ERD and architecture diagrams
-├── notebooks/          # Analysis notebooks (optional)
-├── presentation/       # Final presentation slides
-├── docs/               # Additional documentation
+├── datavault_vs_star/       # dbt project
+│   ├── models/
+│   │   ├── staging/         # Source views (stg_*)
+│   │   ├── data_vault/
+│   │   │   ├── hubs/        # HUB_* tables
+│   │   │   ├── links/       # LINK_* tables
+│   │   │   ├── satellites/  # SAT_* tables
+│   │   │   └── bi/          # Analytical queries (Data Vault)
+│   │   └── star_schema/
+│   │       ├── dim/         # DIM_* tables
+│   │       ├── facts/       # FACT_* tables
+│   │       └── bi/          # Analytical queries (Star Schema)
+│   ├── macros/              # Reusable dbt macros (hash_key, hub, ghost, …)
+│   ├── benchmark.py         # Query benchmarking script
+│   ├── dbt_project.yml
+│   ├── profiles.yml
+│   └── packages.yml
+├── data_vault_ddl.sql       # Raw DDL for Data Vault tables (reference)
+├── generate_tpcds.sh        # TPC-DS data generation script
 └── README.md
 ```
 
@@ -353,26 +366,93 @@ Generate or import the dataset according to the selected database platform.
 
 ## How to Run
 
-### Star Schema
+### Dependencies
+To run the project, you have to have __dbt CLI__ and __DuckDB__ installed.
+For running the benchmarks, __uv__ is a nice-to-have.
 
-1. Create dimension tables
-2. Create fact tables
-3. Load data
-4. Execute analytical queries
+### Generating the source data
+To generate source data, run the __generate_tpcds.sh__ script with:
 
-### Data Vault
+```console
+sh generate_tpcds.sh
+```
 
-1. Create hubs
-2. Create links
-3. Create satellites
-4. Load historical data
-5. Execute comparison queries
+This generates a TPC-DS in the DuckDB database using tpcds plugin with scale factor 1.
+If you want to have a bigger dataset, e.g. for benchmarking purposes, pass the scale factor as an argument:
+
+```console
+sh generate_tpcds.sh 10
+```
+
+### Creating Star Schema and Data Vault
+All dbt commands must be run from inside the `datavault_vs_star/` directory:
+
+```console
+cd datavault_vs_star
+```
+
+First, install the required dbt packages (only needed once):
+
+```console
+dbt deps
+```
+
+Then generate all the tables:
+
+```console
+dbt run
+```
+
+This will generate all tables for both star schema and data vault in the same database as source data.
+The command will also fill the tables related to the business queries.
+
+> If you want to avoid filling the business tables (which can take long on larger datasets)
+> you can exclude them from the `dbt run` with:
+>
+> ```console
+> dbt run --exclude models/star_schema/bi models/data_vault/bi 
+> ```
+> 
+> You still need to compile the BI SQLs for benchmarking – this can be done with:
+>
+> ```console
+> dbt compile --select models/star_schema/bi models/data_vault/bi 
+> ```
+
+### Benchmarking Star Schema vs. Data Vault
+
+To perform the benchmark, run:
+
+```console
+uv run --with duckdb benchmark.py
+```
+
+if you have uv installed, or:
+
+```console
+python benchmark.py
+```
+
+(you need to have __duckdb__ python library installed for the latter).
 
 ---
 
 # Results & Recommendations
 
 ## Key Findings
+
+### Benchmark results
+
+These are benchmark results for __10 runs__, performed on target data with __scale factor 10 (~10 GB of source data)__.
+
+| Query                       | DV avg       | DV min   | Star avg     | Star min | Result          |
+|-----------------------------|--------------|----------|--------------|----------|-----------------|
+| clients_by_revenue          | 2080.4ms     | 1909.5ms | 1185.8ms     | 1161.7ms | Star faster     |
+| monthly_revenue_per_product | 1551.1ms     | 1469.5ms |  514.3ms     |  465.7ms | Star faster     |
+| promotion_effectiveness     | 1181.6ms     | 1088.7ms |  196.7ms     |  170.2ms | Star faster     |
+| sales_per_store             | 1309.1ms     | 1195.9ms |  232.4ms     |  188.1ms | Star faster     |
+| seasonality                 | 1125.8ms     |  894.6ms |  268.5ms     |  207.8ms | Star faster     |
+| **TOTAL (sum of avgs)**     | **7248.0ms** |          | **2397.8ms** |          | **Star faster** |
 
 ### Star Schema
 
@@ -392,15 +472,14 @@ Best for:
 * historical auditability,
 * scalable long-term storage.
 
+
 ---
 
 # Future Improvements
 
 Possible future extensions:
 
-* real benchmark execution with performance metrics,
-* cloud deployment,
-* dbt integration,
+* cloud deployment (Snowflake / BigQuery),
 * streaming data ingestion,
 * automated ETL pipelines,
 * data quality validation,
