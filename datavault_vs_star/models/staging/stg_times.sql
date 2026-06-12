@@ -1,0 +1,1 @@
+SELECT * FROM {{ source('tpcds', 'time_dim') }}

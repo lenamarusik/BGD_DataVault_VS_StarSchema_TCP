@@ -1,0 +1,6 @@
+datavault_vs_star:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: datavault_vs_star.duckdb

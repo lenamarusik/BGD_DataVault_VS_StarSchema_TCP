@@ -1,0 +1,32 @@
+name: datavault_vs_star
+
+profile: datavault_vs_star
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  datavault_vs_star:
+    +static_analysis: strict
+    staging:
+      +materialized: view
+    data_vault:
+      hubs:
+        +materialized: incremental
+      links:
+        +materialized: incremental
+      satellites:
+        +materialized: incremental
+      bi:
+        +materialized: table
+    star_schema:
+      dim:
+        +materialized: incremental
+      facts:
+        +materialized: incremental
+      bi:
+        +materialized: table
+
