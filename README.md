@@ -45,14 +45,27 @@ The main research question is:
 # Repository Structure
 
 ```text
-project/
+BGD_DataVault_VS_StarSchema/
 │
-├── data/               # Sample or generated datasets
-├── sql/                # SQL scripts for Star Schema and Data Vault
-├── diagrams/           # ERD and architecture diagrams
-├── notebooks/          # Analysis notebooks (optional)
-├── presentation/       # Final presentation slides
-├── docs/               # Additional documentation
+├── datavault_vs_star/       # dbt project
+│   ├── models/
+│   │   ├── staging/         # Source views (stg_*)
+│   │   ├── data_vault/
+│   │   │   ├── hubs/        # HUB_* tables
+│   │   │   ├── links/       # LINK_* tables
+│   │   │   ├── satellites/  # SAT_* tables
+│   │   │   └── bi/          # Analytical queries (Data Vault)
+│   │   └── star_schema/
+│   │       ├── dim/         # DIM_* tables
+│   │       ├── facts/       # FACT_* tables
+│   │       └── bi/          # Analytical queries (Star Schema)
+│   ├── macros/              # Reusable dbt macros (hash_key, hub, ghost, …)
+│   ├── benchmark.py         # Query benchmarking script
+│   ├── dbt_project.yml
+│   ├── profiles.yml
+│   └── packages.yml
+├── data_vault_ddl.sql       # Raw DDL for Data Vault tables (reference)
+├── generate_tpcds.sh        # TPC-DS data generation script
 └── README.md
 ```
 
@@ -454,9 +467,7 @@ Best for:
 
 Possible future extensions:
 
-* real benchmark execution with performance metrics,
-* cloud deployment,
-* dbt integration,
+* cloud deployment (Snowflake / BigQuery),
 * streaming data ingestion,
 * automated ETL pipelines,
 * data quality validation,
