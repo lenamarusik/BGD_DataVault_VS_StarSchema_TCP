@@ -385,7 +385,19 @@ sh generate_tpcds.sh 10
 ```
 
 ### Creating Star Schema and Data Vault
-To generate all the tables, run:
+All dbt commands must be run from inside the `datavault_vs_star/` directory:
+
+```console
+cd datavault_vs_star
+```
+
+First, install the required dbt packages (only needed once):
+
+```console
+dbt deps
+```
+
+Then generate all the tables:
 
 ```console
 dbt run
