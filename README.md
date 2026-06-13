@@ -467,9 +467,9 @@ Possible future extensions:
 
 | Team Member        | Contribution                             |
 | ------------------ | ---------------------------------------- |
-| Maksymilian Białas | > TODO: Insert contribution here |
-| Lena Marusik       | > TODO: Insert contribution here |
-| Oskar Mazur        | > TODO: Insert contribution here |
+| Maksymilian Białas | Star Schema, Data Vault, Documentation, Presentation |
+| Lena Marusik       | Star Schema, Data Vault, Documentation, Presentation |
+| Oskar Mazur        | Star Schema, Data Vault, Documentation, Presentation |
 
 ---
 
