@@ -161,18 +161,6 @@ The Star Schema is optimized for:
 
 ---
 
-## Star Schema ERD
-
-> TODO: Insert Star Schema ERD here
-
-Example:
-
-```md
-![Star Schema ERD](./diagrams/star_schema_erd.png)
-```
-
----
-
 # Data Vault Design
 
 ## Scope
@@ -249,18 +237,6 @@ instead of allowing NULLs — preserves referential integrity.
 ### Satellite PKs
 Composite primary key `(entity_hk, load_date)` enables full history tracking 
 — every change creates a new row, nothing is overwritten.
-
----
-
-## Data Vault ERD
-
-> TODO: Insert Vault Schema ERD here
-
-Example:
-
-```md
-![Data Vault ERD](./diagrams/data_vault_erd.png)
-```
 
 ---
 
